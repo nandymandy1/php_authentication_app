@@ -36,7 +36,8 @@ if (isset($_POST['register'])) {
                                 // Check if the email is already registred
                                 if (!DB::query('SELECT email FROM users WHERE email=:email', array(':email' => $email))) {
                                     // Create the user in the Users table
-                                    if ($_FILES['profile_picture']) {
+                                    // Check for the Profile Picture was uploaded or not
+                                    if (is_uploaded_file($_FILES['profile_picture']['tmp_name'])) {
                                         $currentDir = getcwd();
                                         $uploadDirectory = '/assets/img/profile_picture/';
                                         $fileExtensions = ['jpeg', 'jpg', 'png']; // Get all the file extensions
@@ -49,7 +50,7 @@ if (isset($_POST['register'])) {
                                         $uploadPath = $currentDir.$uploadDirectory.basename($imageName);
                                         $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
                                     } else {
-                                        $fileName = 'default.png';
+                                        $imageName = 'default.png';
                                     }
                                     DB::query('INSERT INTO users VALUES (null, :username, :password, :email, :profile_pic)', array(':username' => $username, ':password' => password_hash($password, PASSWORD_BCRYPT), ':email' => $email, ':profile_pic' => $imageName));
                                     $success = true;
